@@ -9,7 +9,7 @@ var config = {
                 debug: true
             }
         },
-    scene: [Menu, Game, Victory, Death]
+    scene: [Menu, Game, Death, Victory]
 }
 
 var player;
@@ -21,13 +21,12 @@ var score = 0;
 var player_life = 100;
 
 var map;
-var curScene;
 var sceneNames = ['game-lvl'];
 var txt_score, txt_life, txt_totalScore;
 var value_score, value_life, value_totalScore;
 var music;
 
-var worldPhys;
+var worldPhys, curScene;
 
 var game = new Phaser.Game(config);
 
@@ -87,7 +86,7 @@ function enemyMvmt(enemy, index){
 
 function gameOver(){
     music.stop();
-    curScene.start("death-scene");
+    this.scene.start("death-scene");
 }
 
 function getDamage(plyr, enemy){
@@ -104,7 +103,7 @@ function getDamage(plyr, enemy){
         enemy.alive = false;
         enemy.destroy();
         score -= 5;
-        if (player_life < 0){
+        if (player_life <= 0){
             gameOver();
         }
         else{
@@ -120,15 +119,16 @@ function getGem(plyr, gem){
 }
 
 function arriveAtChest(){
-    if (player.body.onFloor()){
+    if (!player.body.onFloor()){
         music.stop();
-        curScene.start("win-scene");
+        this.scene.start("win-scene");
     }
 }
 
 function outOfBounds(plyr){
-    if(plyr.body.checkWorldBounds() && plyr.body.y >= 470){
-        gameOver();
+    console.log(plyr.body.checkWorldBounds());
+    if(plyr.body.checkWorldBounds()){
+       music.stop();
+        curScene.start('death-scene');
     }
 }
-
