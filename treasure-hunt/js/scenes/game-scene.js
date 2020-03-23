@@ -21,15 +21,16 @@ class Game extends Phaser.Scene{
     create(){
         // scoring method
         score = 0;
+        worldPhys = this.physics;
         player_life = 100;
         cursors = this.input.keyboard.createCursorKeys();
-        var eX = [736, 480, 576, 960, 1312];
-        var eY = [864, 416, 1280, 1280, 1280];
+        var eX = [480, 576, 960, 1312];
+        var eY = [416, 1280, 1280, 1280];
         // add bgm
         music = this.sound.add('bgm-game');
         music.play({loop:-1});
         // add bg
-        this.add.image(config.width/2, config.height/2, 'bg');
+        this.add.image(config.width/2, config.height/2, 'bg').setScrollFactor(0);
 
         // add map
         map = this.make.tilemap({key: 'map'});
@@ -67,7 +68,7 @@ class Game extends Phaser.Scene{
             frames: [{key: 'player', frame: 'p1_stand'}],
             frameRate: 10,
         });
-        enemyGnomes(5, eX, eY);
+        enemyGnomes(4, eX, eY);
         // enemy sprite animation
         this.anims.create({
         key: 'ewalk',
@@ -83,34 +84,34 @@ class Game extends Phaser.Scene{
         this.cameras.main.startFollow(player);
 
         // score display
-        txt_score = this.add.text(20, 20, "Score:", {
+        txt_score = this.add.text(20, 20, "Score: ", {
             textAlign: 'left',
             fontSize: '20px',
             fill: '#ffffff'
-        });
+        }).setScrollFactor(0);
         value_score = this.add.text(120, 20, score, {
             textAlign: 'left',
             fontSize: '20px',
             fill: '#ffffff'
-        });
+        }).setScrollFactor(0);
         // life display
         txt_life = this.add.text(800, 20, "Life:", {
             textAlign: 'left',
             fontSize: '20px',
             fill: '#ffffff'
-        });
-        value_life = this.add.text(900, 30, player_life, {
+        }).setScrollFactor(0);
+        value_life = this.add.text(900, 20, player_life, {
             textAlign: 'left',
             fontSize: '20px',
             fill: '#ffffff'
-        });
+        }).setScrollFactor(0);
     }
     update(time, delta){
         gnomes.forEach(function arr(enemy, index){
             enemyMvmt(enemy, index);
         });
         playerControls(player, cursors);
-        this.physics.overlap(player, gemLayer);
+        this.physics.overlap(player, gemLayer, getGem);
         outOfBounds(player);
     }
 }

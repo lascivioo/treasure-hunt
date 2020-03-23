@@ -25,7 +25,6 @@ var sceneNames = ['game-lvl'];
 var txt_score, txt_life;
 var value_score, value_life;
 var music;
-var sfxGem, sfxJump, sfxDie;
 
 var worldPhys;
 
@@ -54,7 +53,6 @@ function playerControls(plyr, cursors){
     // jump 
     if (cursors.up.isDown && plyr.body.onFloor()){
         plyr.body.setVelocityY(-500);
-        sfxJump.play();
     }
 }
 
@@ -84,19 +82,27 @@ function enemyMvmt(enemy, index){
         }
         worldPhys.world.collide(player, enemy, getDamage, null, this);
     }
-  }
+}
+
+function gameOver(){
+    music.stop();
+    this.scene.start("death-scene");
+}
 
 function getDamage(plyr, enemy){
     if(enemy.body.touching.up && plyr.body.touching.down){
         plyr.body.setVelocityY(-200);
-        sfxStomp.play();
         enemy.alive = false;
         enemy.destroy();
         score += 5;
         txt_score.setText(score);
     }
     else{
-        player_life--;
+        player_life -= 10;
+        plyr.body.setVelocityY(-200);
+        enemy.alive = false;
+        enemy.destroy();
+        score -= 5;
         if (player_life < 0){
             gameOver();
         }
@@ -108,25 +114,21 @@ function getDamage(plyr, enemy){
 
 function getGem(plyr, gem){
     gemLayer.removeTileAt(gem.x, gem.y); // remove the tile/coin
-    score++; // add 10 points to the score
+    score+= 10; // add 10 points to the score
     value_score.setText(score); // set the text to show the current score
 }
 
 function arriveAtChest(){
-    if (player.body.onFloor()){
+    if (!player.body.onFloor()){
         music.stop();
         this.scene.start("win-scene");
     }
 }
 
 function outOfBounds(plyr){
-    if(plyr.body.checkWorldBounds() && plyr.body.y >= 970){
+    if(plyr.body.checkWorldBounds() && plyr.body.y >= 470){
         music.stop();
-        this.scene.start('death-scene');
+        gameOver();
     }
 }
 
-function gameOver(){
-    music.stop();
-    this.scene.start("death-scene");
-}
